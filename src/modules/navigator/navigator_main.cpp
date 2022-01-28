@@ -59,16 +59,11 @@
 #include <px4_platform_common/tasks.h>
 #include <systemlib/mavlink_log.h>
 
-/**
- * navigator app start / stop handling function
- *
- * @ingroup apps
- */
-extern "C" __EXPORT int navigator_main(int argc, char *argv[]);
 using namespace time_literals;
+
 namespace navigator
 {
-Navigator	*g_navigator;
+Navigator *g_navigator;
 }
 
 Navigator::Navigator() :
@@ -774,7 +769,8 @@ Navigator::run()
 	}
 }
 
-void Navigator::geofence_breach_check(bool &have_geofence_position_data)
+void
+Navigator::geofence_breach_check(bool &have_geofence_position_data)
 {
 
 	if (have_geofence_position_data &&
@@ -906,7 +902,8 @@ void Navigator::geofence_breach_check(bool &have_geofence_position_data)
 	}
 }
 
-int Navigator::task_spawn(int argc, char *argv[])
+int
+Navigator::task_spawn(int argc, char *argv[])
 {
 	_task_id = px4_task_spawn_cmd("navigator",
 				      SCHED_DEFAULT,
@@ -1111,12 +1108,9 @@ Navigator::load_fence_from_file(const char *filename)
 	_geofence.loadFromFile(filename);
 }
 
-/**
- * Creates a fake traffic measurement with supplied parameters.
- *
- */
-void Navigator::fake_traffic(const char *callsign, float distance, float direction, float traffic_heading,
-			     float altitude_diff, float hor_velocity, float ver_velocity, int emitter_type)
+void
+Navigator::fake_traffic(const char *callsign, float distance, float direction, float traffic_heading,
+			float altitude_diff, float hor_velocity, float ver_velocity, int emitter_type)
 {
 	double lat, lon;
 	waypoint_from_heading_and_distance(get_global_position()->lat, get_global_position()->lon, direction, distance, &lat,
@@ -1167,7 +1161,8 @@ void Navigator::fake_traffic(const char *callsign, float distance, float directi
 	tr_pub.publish(tr);
 }
 
-void Navigator::check_traffic()
+void
+Navigator::check_traffic()
 {
 	double lat = get_global_position()->lat;
 	double lon = get_global_position()->lon;
@@ -1448,11 +1443,6 @@ int Navigator::custom_command(int argc, char *argv[])
 	return print_usage("unknown command");
 }
 
-int navigator_main(int argc, char *argv[])
-{
-	return Navigator::main(argc, argv);
-}
-
 void
 Navigator::publish_mission_result()
 {
@@ -1551,7 +1541,8 @@ Navigator::release_gimbal_control()
 	publish_vehicle_cmd(&vcmd);
 }
 
-bool Navigator::geofence_allows_position(const vehicle_global_position_s &pos)
+bool
+Navigator::geofence_allows_position(const vehicle_global_position_s &pos)
 {
 	if ((_geofence.getGeofenceAction() != geofence_result_s::GF_ACTION_NONE) &&
 	    (_geofence.getGeofenceAction() != geofence_result_s::GF_ACTION_WARN)) {
@@ -1565,7 +1556,8 @@ bool Navigator::geofence_allows_position(const vehicle_global_position_s &pos)
 	return true;
 }
 
-int Navigator::print_usage(const char *reason)
+int
+Navigator::print_usage(const char *reason)
 {
 	if (reason) {
 		PX4_WARN("%s\n", reason);
@@ -1594,4 +1586,14 @@ controller.
 	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
 
 	return 0;
+}
+
+/**
+ * navigator app start / stop handling function
+ *
+ * @ingroup apps
+ */
+extern "C" __EXPORT int navigator_main(int argc, char *argv[])
+{
+	return Navigator::main(argc, argv);
 }
